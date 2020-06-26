@@ -1,8 +1,11 @@
-from PyQt5.QtWidgets import QLabel, QLineEdit, QAbstractScrollArea, QTableWidgetItem, QTableWidget, QApplication, QMainWindow, QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QToolBar, QAction
+from PyQt5.QtWidgets import QMessageBox, QLabel, QLineEdit, QAbstractScrollArea, QTableWidgetItem, QTableWidget, QApplication, QMainWindow, QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QToolBar, QAction
 from PyQt5.QtGui import QIcon
 import sys
 from PyQt5 import QtGui
 import json
+
+datac = open('data_contact.json')
+dataco = json.load(datac)
 
 
 class myApp(QMainWindow):
@@ -28,20 +31,19 @@ class myApp(QMainWindow):
 
     def toolBars(self):
         self.toolBar = QToolBar()
-        button_toolBar = QAction(QIcon("icon/add.png"), "test", self)
-        self.toolBar.addAction(button_toolBar)
-        button_toolBar.triggered.connect(self.toolPrint)
+        button_tools = QAction(QIcon("icon/contact.png"), "Help", self)
+        self.toolBar.addAction(button_tools)
+        button_tools.triggered.connect(self.popupHelp)
 
-    def toolPrint(self):
-        print("clicked!")
+    def popupHelp(self):
+        msg_pop = "PyQT Contact Help Center!"
+        QMessageBox.information(self, "Help Center", msg_pop)
 
     def menuBars(self):
         self.menu = self.menuBar()
         test = self.menu.addMenu("File")
         test2 = self.menu.addMenu("App")
-        test.addAction("help")
-        test.setToolTip("this is help")
-        test2.addAction("About This App")
+        test.addAction("Tentang Aplikasi")
 
     def mainLayout(self):
         self.layout = QVBoxLayout()
@@ -51,6 +53,7 @@ class myApp(QMainWindow):
         self.mainWidget.setLayout(self.layout)
 
 
+# Show Data Contact
 class firstTab(QWidget):
     def __init__(self):
         super(firstTab, self).__init__()
@@ -86,41 +89,41 @@ class firstTab(QWidget):
         pass
 
 
+# Add to Favorite Contact List
 class secondTab(QWidget):
     def __init__(self):
         super(secondTab, self).__init__()
         self.mainUI()
 
     def mainUI(self):
-        self.listContact()
-        self.button = QPushButton("Add To Favorite")
+        self.favoriteData()
 
-    def listContact(self):
+    def favoriteData(self):
         self.tableWidget = QTableWidget()
         self.tableWidget.setSizeAdjustPolicy(
             QAbstractScrollArea.AdjustToContents)
-        self.tableWidget.setRowCount(5)
+        favorites = list(filter(lambda x: x["favorite"] == 1, dataco))
+        self.tableWidget.setRowCount(len(dataco))
         self.tableWidget.setColumnCount(2)
 
-        self.tableWidget.setItem(0, 0, QTableWidgetItem("Name"))
-        self.tableWidget.setItem(0, 1, QTableWidgetItem("Phone No"))
-
-        self.tableWidget.setItem(1, 0, QTableWidgetItem("Parwiz"))
-        self.tableWidget.setItem(1, 1, QTableWidgetItem("845845845"))
-        self.tableWidget.setColumnWidth(1, 200)
-
-        self.tableWidget.setItem(2, 0, QTableWidgetItem("Ahmad"))
-        self.tableWidget.setItem(2, 1, QTableWidgetItem("2232324"))
-
-        self.tableWidget.setItem(3, 0, QTableWidgetItem("John"))
-        self.tableWidget.setItem(3, 1, QTableWidgetItem("2236786782324"))
-
-        self.tableWidget.setItem(4, 0, QTableWidgetItem("Doe"))
-        self.tableWidget.setItem(4, 1, QTableWidgetItem("12343445"))
+        if favorites:
+            for row in range(len(favorites)):
+                for col in range(2):
+                    if col == 0:
+                        self.tableWidget.setItem(
+                            row, col, QTableWidgetItem(favorites[row]['nama']))
+                    else:
+                        self.tableWidget.setItem(
+                            row, col, QTableWidgetItem(favorites[row]['nomor_hp']))
+        else:
+            pass
+        self.tableWidget.setHorizontalHeaderLabels(["Name", "Phone Number"])
 
         self.vBoxLayout = QVBoxLayout()
         self.vBoxLayout.addWidget(self.tableWidget)
         self.setLayout(self.vBoxLayout)
+
+# Add New Contact
 
 
 class thirdTab(QWidget):
