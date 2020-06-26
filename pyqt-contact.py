@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMessageBox, QLabel, QLineEdit, QAbstractScrollArea, QTableWidgetItem, QTableWidget, QApplication, QMainWindow, QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QToolBar, QAction
 from PyQt5.QtGui import QIcon
-import sys
 from PyQt5 import QtGui
+import sys
 import json
 
 datac = open('data_contact.json')
@@ -130,23 +130,35 @@ class thirdTab(QWidget):
     def __init__(self):
         super(thirdTab, self).__init__()
         self.mainUI()
+        self.setLayout(self.layout)
 
     def mainUI(self):
-        self.addContact()
+
+        self.name = QLabel()
+        self.name.setText('Name:')
+        self.lineEdit = QLineEdit()
+        self.lineEdit.setPlaceholderText("Type Name")
+        self.contact = QLabel()
+        self.contact.setText('Contact:')
+        self.lineEdit2 = QLineEdit()
+        self.lineEdit2.setPlaceholderText("Type Phone Number")
+        self.buttonAdd = QPushButton("Add To Contact")
+        self.buttonAdd.clicked.connect(self.addContact)
+        self.lineEdit2.returnPressed.connect(self.addContact)
+
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.lineEdit)
+        self.layout.addWidget(self.lineEdit2)
+        self.layout.addWidget(self.buttonAdd)
 
     def addContact(self):
-        self.name = QLabel(self)
-        self.name.setText('Name:')
-        self.contact = QLabel(self)
-        self.contact.setText('Contact:')
-        self.line = QLineEdit(self)
-        self.buttonAdd = QPushButton("Add To Contact")
-
-        self.vBoxLayout = QVBoxLayout()
-        self.vBoxLayout.addWidget(self.name)
-        self.vBoxLayout.addWidget(self.line)
-        self.vBoxLayout.addWidget(self.contact)
-        self.vBoxLayout.addWidget(self.buttonAdd)
+        name = self.lineEdit.text()
+        phone = self.lineEdit2.text()
+        params = {"nama": name, "nomor_hp": phone, "favorite": 0}
+        self.users.append(params)
+        toJson = json.dumps(self.users, indent=4)
+        fwrite = open('data_contact.json', 'w')
+        fwrite.write(toJson)
 
 
 if __name__ == "__main__":
