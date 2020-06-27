@@ -21,13 +21,13 @@ class myApp(QMainWindow):
         self.addToolBar(self.toolBar)
 
     def mainUI(self):
-        self.firstTab = firstTab()
-        self.secondTab = secondTab()
-        self.thirdTab = thirdTab()
+        self.firstTabs = firstTab()
+        self.secondTabs = secondTab()
+        self.thirdTabs = thirdTab()
         self.tabs = QTabWidget()
-        self.tabs.addTab(self.firstTab, "Contact")
-        self.tabs.addTab(self.secondTab, "Favorite")
-        self.tabs.addTab(self.thirdTab, "Add Contact")
+        self.tabs.addTab(self.firstTabs, "Contact")
+        self.tabs.addTab(self.secondTabs, "Favorite")
+        self.tabs.addTab(self.thirdTabs, "Add Contact")
 
     def toolBars(self):
         self.toolBar = QToolBar()
@@ -70,13 +70,14 @@ class firstTab(QWidget):
         self.setLayout(self.layout)
 
     def mainUI(self):
-        self.btnAddFavorite = QPushButton("Add to favorite")
+        self.btnAddFavorite = QPushButton("Add to Favorite")
         self.btnAddFavorite.clicked.connect(self.addToFavorite)
-        # set widget
+
         self.layout = QVBoxLayout()
         self.layout.addWidget(self.tablePlaces)
         self.layout.addWidget(self.btnAddFavorite)
 
+    # add favorite in list
     def addToFavorite(self):
         for i in self.userContact:
             if self.dataFavorite['nama'] == i['nama']:
@@ -85,6 +86,7 @@ class firstTab(QWidget):
         fwrite = open('data_contact.json', 'w')
         fwrite.write(toJson)
 
+    # fetch favorite in list
     def fetchFavorite(self, row, column):
         favoriteData = []
         rwf = row
@@ -96,7 +98,7 @@ class firstTab(QWidget):
             if favoriteData[0] == i['nama']:
                 self.dataFavorite.update(i)
 
-    # Logic to SecondTabs
+    # Logic to Favorite Tabs
     def FavoriteTable(self):
         self.head = ["name", "phone number"]
         row = len(list(self.userContact))
@@ -124,7 +126,7 @@ class secondTab(QWidget):
         self.open = open("data_contact.json", "r")
         self.userContact = json.loads(self.open.read())
         self.dataFavorite = {}
-        self.createTable()
+        self.favoriteContact()
         self.mainUI()
         self.setLayout(self.layout)
 
@@ -136,7 +138,8 @@ class secondTab(QWidget):
         self.layout.addWidget(self.tableFavs)
         self.layout.addWidget(self.btnDeleteFavorite)
 
-    def createTable(self):
+    # get from mainUI
+    def favoriteContact(self):
         self.head = ["name", "phone number"]
         self.contactFav = list(
             filter(lambda a: a["favorite"] == 1, self.userContact))
@@ -156,6 +159,7 @@ class secondTab(QWidget):
         self.tableFavs.setHorizontalHeaderLabels(self.head)
         self.tableFavs.cellClicked.connect(self.fetchFavorite)
 
+    # fetch favorite in list
     def fetchFavorite(self, row, column):
         favoriteData = []
         rw = row
@@ -167,6 +171,7 @@ class secondTab(QWidget):
             if favoriteData[0] == i['nama']:
                 self.dataFavorite.update(i)
 
+    # delete favorite if click nama in list
     def deleteFromfavorite(self):
         for i in self.userContact:
             if self.dataFavorite['nama'] == i['nama']:
@@ -186,12 +191,13 @@ class thirdTab(QWidget):
         self.open = open("data_contact.json", "r")
         self.userContact = json.loads(self.open.read())
 
+    # logic add
     def mainUI(self):
         self.lineEdit = QLineEdit()
-        self.lineEdit.setPlaceholderText("Type Name")
+        self.lineEdit.setPlaceholderText("Set Name")
         self.lineEdit2 = QLineEdit()
-        self.lineEdit2.setPlaceholderText("Type Phone Number")
-        self.buttonAdd = QPushButton("Add To Contact")
+        self.lineEdit2.setPlaceholderText("Set Phone Number")
+        self.buttonAdd = QPushButton("Add To Contact List")
         self.buttonAdd.clicked.connect(self.addContact)
         self.lineEdit.returnPressed.connect(self.addContact)
         self.lineEdit2.returnPressed.connect(self.addContact)
@@ -201,7 +207,7 @@ class thirdTab(QWidget):
         self.layout.addWidget(self.lineEdit2)
         self.layout.addWidget(self.buttonAdd)
 
-    # logic
+    # get from MainUI
 
     def addContact(self):
         name = self.lineEdit.text()
